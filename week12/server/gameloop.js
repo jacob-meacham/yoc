@@ -21,11 +21,10 @@ var config = {
 }
 
 class tower {
-  constructor(id, owner, position, health, souls) {
+  constructor(id, owner, position, souls) {
     this.id = id
     this.owner = owner
     this.position = position
-    this.health = health
     this.souls = souls
     this.attackers = 0
     this.target = -1  
@@ -45,7 +44,8 @@ class tower {
     var dt = (now - this.last_move) / 1000.0
     var num = Math.floor(dt * rate)
     if (num > 0) {
-      // Only move if the target has capacity
+      // Only move if we have souls to send and the target has capacity to receive
+      num = Math.min(this.souls, num)
       num = Math.min(num, state.towers[this.target].capacity - state.towers[this.target].souls)
       if (num > 0) {
         this.souls -= num
@@ -102,9 +102,10 @@ class tower {
 }
 
 class harvester_tower extends tower {
-  constructor(id, owner, position, health, souls) {
-    super(id, owner, position, health, souls)
+  constructor(id, owner, position, souls) {
+    super(id, owner, position, souls)
     this.type = "harvester"
+    this.health = config.harvester.health
     this.last_harvest = Date.now()
     this.capacity = config.harvester.capacity
     this.range = config.harvester.range
@@ -133,11 +134,12 @@ class harvester_tower extends tower {
 }
 
 class combat_tower extends tower {
-  constructor(id, owner, position, health, souls) {
-    super(id, owner, position, helath, souls)
+  constructor(id, owner, position, souls) {
+    super(id, owner, position, souls)
     this.type = "combat"
-    this.capacity = config.combat.capacity;
-    this.defense = config.combat.defense;
+    this.health = config.combat.health
+    this.capacity = config.combat.capacity
+    this.defense = config.combat.defense
   }
 
   move_souls(state) {
@@ -155,6 +157,7 @@ class combat_tower extends tower {
     var dt = (now - this.last_move) / 1000.0
     var num = Math.floor(dt * rate)
     if (num > 0) {
+      num = Math.min(num, this.souls)
       this.souls -= num
       state.towers[this.target].attackers += num
       this.last_move = now
@@ -169,10 +172,12 @@ class gamestate {
                    [ 0,  8,  7,  4],
                    [ 4,  7,  8,  0],
                    [ 1,  3,  0, 15]]
-    this.towers = [ new harvester_tower(0, 0, [3,3], 100, 20), 
-                    new harvester_tower(1, 1, [0,0], 100, 20) ]
-    this.adjacency = [[0, 0],[0, 0]]
+    this.towers = [ new harvester_tower(0, 0, [3,3], 20), 
+                    new combat_tower(1, 0, [2,3], 10),
+                    new harvester_tower(2, 1, [0,0], 20) ]
+    this.adjacency = [[0, 1, 0],[1, 0, 0],[0, 0, 0]]
     this.towers[0].target = 1
+    this.towers[1].target = 2
   }
 
   update() {
