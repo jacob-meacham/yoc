@@ -54,6 +54,7 @@ class tower {
 
     // get the number of souls within range and harvest some of them
     var nearSouls = state.souls_in_range(this.position, config.towers[this.typeid].harvest_range)
+    state.harvestable_souls[this.owner] += nearSouls
     var dt = (now - this.last_soul_harvest) / 1000.0
     var num = Math.min(Math.floor(dt * config.towers[this.typeid].harvest_rate), nearSouls)
     if (num == 0) {
@@ -66,7 +67,7 @@ class tower {
     num = Math.min(num, this.capacity - this.souls)
     if (num > 0) {
       this.souls += num
-      state.harvest_souls(num, this.position, config.towers[this.typeid].harvest_range)
+      state.harvest_souls(this.owner, num, this.position, config.towers[this.typeid].harvest_range)
     }
   }
 
@@ -90,7 +91,6 @@ class tower {
 
     // Don't move more souls than we have...
     num = Math.min(this.souls, num)
-    console.log("Moving from " + this.id + " to " + this.target)
     if (state.towers[this.target].owner == this.owner) {
       // Moving to a friendly tower, don't overfill it
       num = Math.min(num, state.towers[this.target].capacity - state.towers[this.target].souls)
@@ -109,6 +109,7 @@ class tower {
     }
 
     var now = Date.now()
+    var opponent = (this.owner + 1) & 1
 
     // Kill some attackers based on our defensive ability
     // kills per second ranges from 0 to this.defense on a bit of an s-curve based
@@ -120,7 +121,7 @@ class tower {
     if (num_killed > 0) {
       num_killed = Math.min(num_killed, this.attackers)
       this.attackers -= num_killed
-      state.release_souls(num_killed, this.position, config.battle.soul_release_range)
+      state.release_souls(opponent, num_killed, this.position, config.battle.soul_release_range)
       this.last_defensive_kill = now
     }
 
@@ -136,15 +137,17 @@ class tower {
       num_killed = Math.min(num_killed, this.souls)
       this.souls -= num_killed
       this.health -= health_deduction
-      state.release_souls(num_killed, this.position, config.battle.soulReleaseRange)
+      state.release_souls(this.owner, num_killed, this.position, config.battle.soulReleaseRange)
       this.last_defensive_death = now
 
       if (this.health <= 0) {
         // Seize the tower
-        this.owner = (this.owner + 1) & 1
+        state.tower_counts[this.owner]--;
+        this.owner = opponent
         this.health = config.towers[this.typeid].health
         this.souls = this.attackers
         this.attackers = 0
+        state.tower_counts[this.owner]++;
       }
     }
   }
@@ -166,10 +169,15 @@ class gamestate {
 
     this.towers[0].target = 1
     this.towers[1].target = 2
+
+    this.tower_counts = [2, 1]
+    this.soul_counts = [30,20]
+    this.harvestable_souls = [0,0]
   }
 
   update() {
     // update in three phases - harvest, movement, battle
+    this.harvestable_souls = [0,0]
     this.towers.forEach((tower) => {
       tower.harvest_souls(this)
     })
@@ -185,15 +193,28 @@ class gamestate {
     return this.soul_map[pos[0]][pos[1]]
   }
 
-  harvest_souls(count, pos, range) {
+  harvest_souls(player, count, pos, range) {
     this.soul_map[pos[0]][pos[1]] -= count
+    this.soul_counts[player] += count
   }
 
-  release_souls(count, pos, range) {
+  release_souls(player, count, pos, range) {
     this.soul_map[pos[0]][pos[1]] += count
+    this.soul_counts[player] -= count
   }
 
-  is_gameover() {
+  check_gameover() {
+    // game is over when a player has lost all towers
+    if (this.tower_counts[0] == 0 || this.tower_counts[1] == 0) {
+      return true
+    }
+    // game is over if a player has no souls and no ability to get more
+    if (this.soul_counts[0] == 0 && this.harvestable_souls[0] == 0) {
+      return true
+    }
+    if (this.soul_counts[1] == 0 && this.harvestable_souls[1] == 0) {
+      return true
+    }
     return false
   }
 }
@@ -211,7 +232,8 @@ exports.start = function(socket, period) {
     state.update()
     socket.emit('state', state)
     
-    if (state.is_gameover()) {
+    if (state.check_gameover()) {
+      console.log("Game Over")
       clearInterval(loop)
     }
   }, period)
