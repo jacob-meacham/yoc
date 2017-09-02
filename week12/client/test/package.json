@@ -9,9 +9,7 @@
   "scripts": {
     "lint": "eslint .",
     "check": "npm run lint",
-    "dev": "nodemon ./server.js --port 6464",
-    "deploy": "now --public",
-    "now-start": "node ./server.js"
+    "dev": "node ./client.js --server wss://localhost:6464"
   },
   "author": "",
   "license": "MIT",
@@ -20,16 +18,9 @@
     "eslint-config-standard": "6.2.1",
     "eslint-plugin-promise": "3.4.0",
     "eslint-plugin-standard": "2.0.1",
-    "nodemon": "1.11.0",
-    "now": "7.4.0",
     "yargs": "8.0.2"
   },
   "dependencies": {
-    "jsonwebtoken": "7.4.3",
-    "moniker": "0.1.2",
-    "shuffle-array": "1.0.1",
-    "socket.io": "2.0.3",
-    "socketio-jwt": "4.5.0",
-    "winston": "2.3.1"
+    "socket.io-client": "2.0.3"
   }
 }

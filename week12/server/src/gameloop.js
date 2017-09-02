@@ -28,7 +28,7 @@ class tower {
     this.health = health
     this.souls = souls
     this.attackers = 0
-    this.target = -1  
+    this.target = -1
     this.last_move = Date.now()
     this.last_defensive_kill = Date.now()
     this.last_defensive_death = Date.now()
@@ -164,12 +164,12 @@ class combat_tower extends tower {
 
 class gamestate {
   constructor(config) {
-    this.soul_map = 
+    this.soul_map =
                   [[ 15, 0,  3,  1],
                    [ 0,  8,  7,  4],
                    [ 4,  7,  8,  0],
                    [ 1,  3,  0, 15]]
-    this.towers = [ new harvester_tower(0, 0, [3,3], 100, 20), 
+    this.towers = [ new harvester_tower(0, 0, [3,3], 100, 20),
                     new harvester_tower(1, 1, [0,0], 100, 20) ]
     this.adjacency = [[0, 0],[0, 0]]
     this.towers[0].target = 1
@@ -201,21 +201,4 @@ class gamestate {
   }
 }
 
-exports.start = function(socket, period) {
-  var state = new gamestate()
-  var last_update = Date.now()
-
-  // setInterval can be pretty noisy
-  // might want to do something like at http://timetocode.tumblr.com/post/71512510386/an-accurate-nodejs-game-loop-inbetween-settimeout
-  var loop = setInterval(() => {
-    var now = Date.now()
-    last_update = now
-
-    state.update()
-    socket.emit('state', state)
-    
-    if (state.isGameOver()) {
-      clearInterval(loop)
-    }
-  }, period)
-}
+module.exports = gamestate
