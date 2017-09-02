@@ -32,7 +32,7 @@ class GameManager {
       player1.socket.emit('game:state', state)
       player2.socket.emit('game:state', state)
 
-      if (state.isGameOver()) {
+      if (state.check_gameover()) {
         clearInterval(loop)
         player1.socket.emit('game:ended', state)
         player2.socket.emit('game:ended', state)
