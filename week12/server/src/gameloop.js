@@ -2,35 +2,44 @@ var config = {
   towers: [
     // harvester
     {
-      health: 100,
+      health: 10,
       capacity: 100,
       harvest_rate: 2,
-      harvest_range: 1,
-      defense_kps: 1
+      harvest_range: 8,
+      defense_kps: 0.5,
+      cost: 5,
+      control_range: 1
     },
     // combat
     {
       health: 50,
-      capacity: 50,
+      capacity: 10,
       harvest_rate: 0,
       harvest_range: 0,
-      defense_kps: 3
+      defense_kps: 4,
+      cost: 5,
+      control_range: 1
     }
   ],
   travel_rates: [1,2,4,8],
   battle: {
     soul_release_range: 1,
     attack_kps: 4
+  },
+  map: {
+    dim: 128.0,
+    initial_souls: 200,
+    player_spawns: [[12.0,12.0],[116.0,116.0]]
   }
 }
 
 class tower {
-  constructor(typeid, id, owner, position, souls) {
+  constructor(typeid, id, owner, position) {
     this.id = id
     this.typeid = typeid
     this.owner = owner
     this.position = position
-    this.souls = souls
+    this.souls = 0
     this.attackers = 0
     this.target = -1  
     
@@ -54,9 +63,9 @@ class tower {
 
     // get the number of souls within range and harvest some of them
     var nearSouls = state.souls_in_range(this.position, config.towers[this.typeid].harvest_range)
-    state.harvestable_souls[this.owner] += nearSouls
+    state.harvestable_souls[this.owner] += nearSouls.length
     var dt = (now - this.last_soul_harvest) / 1000.0
-    var num = Math.min(Math.floor(dt * config.towers[this.typeid].harvest_rate), nearSouls)
+    var num = Math.min(Math.floor(dt * config.towers[this.typeid].harvest_rate), nearSouls.length)
     if (num == 0) {
       return
     }
@@ -67,7 +76,8 @@ class tower {
     num = Math.min(num, this.capacity - this.souls)
     if (num > 0) {
       this.souls += num
-      state.harvest_souls(this.owner, num, this.position, config.towers[this.typeid].harvest_range)
+      nearSouls.splice(num)
+      state.harvest_souls(this.owner, nearSouls, this.position, config.towers[this.typeid].harvest_range)
     }
   }
 
@@ -154,25 +164,47 @@ class tower {
 }
 
 class gamestate {
-  constructor(config) {
-    this.soul_map = 
-                  [[ 15, 0,  3,  1],
-                   [ 0,  8,  7,  4],
-                   [ 4,  7,  8,  0],
-                   [ 1,  3,  0, 15]]
+  constructor() {
+    this.init_souls()
 
-    this.towers = [ new tower(0, 0, 0, [3,3], 20), 
-                    new tower(1, 1, 0, [2,3], 10),
-                    new tower(0, 2, 1, [0,0], 20) ]
-
-    this.adjacency = [[0, 1, 0],[1, 0, 0],[0, 0, 0]]
-
-    this.towers[0].target = 1
-    this.towers[1].target = 2
-
-    this.tower_counts = [2, 1]
-    this.soul_counts = [30,20]
+    this.towers = [ new tower(0, 0, 0, config.map.player_spawns[0]),
+                    new tower(0, 1, 1, config.map.player_spawns[1]) ]
+    
+    this.adjacency = [[0, 0, 1],[0, 0, 0],[1, 0, 0]]
+    
+    this.tower_counts = [1, 1]
+    this.soul_counts = [0,0]
     this.harvestable_souls = [0,0]
+  }
+
+  release_soul(pos, range) {
+    var t = Math.random() * 2.0 * Math.PI
+    var r = Math.sqrt(Math.random()) * range
+    var pos = [r * Math.cos(t) + pos[0], r * Math.sin(t) + pos[1]]
+    pos[0] = Math.floor(100 * Math.min(Math.max(0, pos[0]), config.map.dim)) / 100.0
+    pos[1] = Math.floor(100 * Math.min(Math.max(0, pos[1]), config.map.dim)) / 100.0
+
+    this.free_souls.push(pos)
+  }
+
+  init_souls() {
+    this.free_souls = []
+    // place (1/8) around each spawn point
+    var spawn_amount = Math.floor(config.map.initial_souls / 8)
+    for (var i=0; i<spawn_amount; i++) {
+      this.release_soul(config.map.player_spawns[0], config.towers[0].harvest_range)
+      this.release_soul(config.map.player_spawns[1], config.towers[0].harvest_range)
+    }
+    // place (1/4) around the center within a circle with radius 1/16 the size of the map
+    var center_amount = Math.floor(config.map.initial_souls / 4)
+    for (var i=0; i<center_amount; i++) {
+      this.release_soul([config.map.dim / 2.0, config.map.dim / 2.0], config.map.dim / 16.0)
+    }
+    // place the rest around the center within a circle with radius 1/2 the size of the map
+    var remaining = config.map.initial_souls - 2*spawn_amount - center_amount
+    for (var i=0; i<remaining; i++) {
+      this.release_soul([config.map.dim / 2.0, config.map.dim / 2.0], config.map.dim / 2.0)
+    }
   }
 
   update() {
@@ -190,16 +222,29 @@ class gamestate {
   }
 
   souls_in_range(pos, range) {
-    return this.soul_map[pos[0]][pos[1]]
+    // optimize if necessary
+    var souls = []
+    for (var i=0; i<this.free_souls.length; i++) {
+      var d = [this.free_souls[i][0] - pos[0], this.free_souls[i][1] - pos[1]]
+      var d2 = d[0]*d[0] + d[1]*d[1]
+      if (d2 <= (range*range)) {
+        souls.push(i)
+      }
+    }
+    return souls
   }
 
-  harvest_souls(player, count, pos, range) {
-    this.soul_map[pos[0]][pos[1]] -= count
-    this.soul_counts[player] += count
+  harvest_souls(player, indices, pos, range) {
+    for (var i=0; i<indices.length; i++) {
+      this.free_souls.splice(indices[i] - i, 1)
+    }
+    this.soul_counts[player] += indices.length
   }
 
   release_souls(player, count, pos, range) {
-    this.soul_map[pos[0]][pos[1]] += count
+    for (var i=0; i<count; i++) {
+      this.release_soul(pos, range)
+    }
     this.soul_counts[player] -= count
   }
 
@@ -220,4 +265,3 @@ class gamestate {
 }
 
 module.exports = gamestate
-
