@@ -219,22 +219,5 @@ class gamestate {
   }
 }
 
-exports.start = function(socket, period) {
-  var state = new gamestate()
-  var last_update = Date.now()
+module.exports = gamestate
 
-  // setInterval can be pretty noisy
-  // might want to do something like at http://timetocode.tumblr.com/post/71512510386/an-accurate-nodejs-game-loop-inbetween-settimeout
-  var loop = setInterval(() => {
-    var now = Date.now()
-    last_update = now
-
-    state.update()
-    socket.emit('state', state)
-    
-    if (state.check_gameover()) {
-      console.log("Game Over")
-      clearInterval(loop)
-    }
-  }, period)
-}
