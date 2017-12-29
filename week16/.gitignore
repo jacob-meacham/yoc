@@ -1,2 +1,7 @@
+corpus/
+
+# IDE
 .idea/
+
+# OS X
 .DS_Store
