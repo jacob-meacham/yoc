@@ -1,5 +1,4 @@
 import markovify
-import re
 import spacy
 
 # TODO: Interface to the model for generating a paper
@@ -17,25 +16,25 @@ def word_join(words):
 
 class PartOfSpeechAwareText(markovify.Text):
     def word_split(self, sentence):
-        word_split(sentence)
+        return word_split(sentence)
 
     def word_join(self, words):
-        word_join(words)
+        return word_join(words)
 
 
 class PartOfSpeechAwareNewlineText(markovify.NewlineText):
     def word_split(self, sentence):
-        word_split(sentence)
+        return word_split(sentence)
 
     def word_join(self, words):
-        word_join(words)
+        return word_join(words)
 
 
 def build_model(text, newline_delimited=False):
     if newline_delimited:
-        return PartOfSpeechAwareNewlineText(text)
+        return markovify.NewlineText(text)
 
-    return PartOfSpeechAwareText(text)
+    return markovify.Text(text)
 
 
 def load_model(model_definition):

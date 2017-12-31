@@ -1,4 +1,6 @@
-corpus/
+*.pyc
+
+cryptozoo/corpus/
 
 # IDE
 .idea/
