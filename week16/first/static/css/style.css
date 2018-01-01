@@ -1,0 +1,77 @@
+body {
+    font-family: 'Montserrat', sans-serif;
+}
+
+.masthead {
+  background-color: #F8F1FF;
+  color: #333;
+  margin-bottom: 30px;
+  position: relative;
+  background-image: url(../img/pattern.png);
+}
+
+.footer {
+  font-size: 14px;
+  border-top: 15px solid #EAD94C;
+  background-image: url(../img/pattern.png);
+  background-color: #DD7373;
+  color: white;
+  position: absolute;
+  width: 100%;
+  bottom: 0px;
+  height: 30px;
+  font-weight: 100;
+}
+
+.navbar {
+    margin-top: 10px;
+    background-color: #576CA8;
+    text-transform: uppercase;
+    font-size: 20px;
+    background-image: url(../img/pattern.png);
+    padding: 0 50px;
+}
+
+.navbar a,
+.navbar a:focus {
+  color: white;
+}
+
+.nav-item.active {
+  background-color: #94A1C7;
+}
+
+.navbar a:hover {
+  background-color: #94A1C7;
+}
+
+@media (min-width: 992px) {
+    .navbar-expand-lg .navbar-nav .nav-link {
+        margin-right: 1.5em;
+    }
+}
+
+.navbar-brand {
+    margin-left: 50px;
+    margin-top: 15px;
+}
+
+.navbar-brand img {
+    vertical-align: baseline;
+}
+
+.navbar-title {
+    display: inline-block;
+    padding-top: .3125rem;
+    padding-bottom: .3125rem;
+    margin-right: 1rem;
+    font-size: 1rem;
+    line-height: inherit;
+    white-space: nowrap;
+    color: #4B296B;
+}
+
+.navbar-title .title {
+    font-weight: bolder;
+    font-size: 1.875rem;
+}

@@ -1,6 +1,6 @@
 *.pyc
 
-cryptozoo/corpus/
+corpus/
 
 # IDE
 .idea/
