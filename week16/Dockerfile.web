@@ -1,0 +1,25 @@
+FROM python:3-alpine3.7
+
+# Requirements for numpy
+RUN echo "http://dl-8.alpinelinux.org/alpine/edge/community" >> /etc/apk/repositories
+RUN apk --no-cache --update-cache add gcc gfortran python-dev build-base wget freetype-dev libpng-dev openblas-dev
+RUN ln -s /usr/include/locale.h /usr/include/xlocale.h
+
+ADD ./requirements.txt /tmp/requirements.txt
+
+# Install dependencies
+RUN pip install --no-cache-dir -r /tmp/requirements.txt
+
+# Install spacy model
+RUN python -m spacy download en
+
+ADD ./first.py /opt/first/
+ADD ./first/ /opt/first/first/
+ADD ./cryptozoo /opt/first/cryptozoo
+WORKDIR /opt/first
+
+RUN adduser -D first
+USER first
+
+CMD python first.py
+# CMD echo 'test'

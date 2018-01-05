@@ -1,8 +1,8 @@
 from flask import Flask, render_template
-from cryptozoo.models import markov
+# from cryptozoo.models import markov
 
 app = Flask(__name__)
-app.config['TEMPLATES_AUTO_RELOAD'] = True
+#app.config['TEMPLATES_AUTO_RELOAD'] = True
 # with open("corpus/TableCaptions.txt") as f:
 #     text = f.read()
 #
@@ -44,7 +44,7 @@ def paper():
     })
 
 @app.route('/about')
-def paper():
+def about():
     return render_template('layout.html', **{
         'title': 'About',
         'base_url': 'localhost:5000'
