@@ -25,7 +25,8 @@
 
         <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.3/css/bootstrap.min.css" integrity="sha384-Zug+QiDoJOrZ5t4lssLdxGhVrurbmBWopoEl+M6BdEfwnCJZtKxi1KgxUyJq13dy" crossorigin="anonymous">
 
-        <link href="https://fonts.googleapis.com/css?family=Montserrat" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,700" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Roboto+Condensed:400" rel="stylesheet">
 
         <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/style.css') }}" />
     </head>
@@ -57,14 +58,53 @@
                   <a class="nav-item nav-link {% if request.path == '/submissions' %}active{% endif %}" href="/submissions">Call for Papers</a>
                   <a class="nav-item nav-link {% if request.path == '/about' %}active{% endif %}" href="/about">About</a>
                 </div>
-  </div>
+              </div>
             </nav>
         </div>
         <main class="main">
             <div class="container">
+                {% block main %}{% endblock %}
+                <div class="sponsors">
+                    <h2>Sponsors</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="sponsor-item riftcorp">
+                                <div class="logo"><img src="{{ url_for('static', filename='img/riftcorp_logo.png') }}"></div>
+                                <div class="text">The Rift Corporation</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="sponsor-item src">
+                                <div class="logo"><img src="{{ url_for('static', filename='img/src_logo.png') }}"></div>
+                                <div class="text">
+                                    <div class="text1">Society for</div>
+                                    <div class="text2">Rift Cryptozoology</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="sponsor-item rift-city-university">
+                                <div class="logo"><img src="{{ url_for('static', filename='img/riftuniversity_logo.png') }}"></div>
+                                <div class="text">
+                                    <div class="text1">Rift City University</div>
+                                    <div class="text2">Science and Technology</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="sponsor-item kraznov-federation">
+                                <div class="logo"><img src="{{ url_for('static', filename='img/federation_logo.png') }}"></div>
+                                <div class="text">University of<br> the Kraznov<br> Federation</div>
+                            </div>
+                        </div>
+                    </div>
             </div>
         </main>
         <footer class="footer">
+            <div class="copyright">
+                Copyright © 2018, Foundation for Interdisciplinary Rift Science and Technology | firstconf.org
+            </div>
+            <div class="attribution">Icons made by <a href="https://www.flaticon.com/authors/alfredo-hernandez" title="Alfredo Hernandez">Alfredo Hernandez</a>, <a href="http://www.freepik.com" title="Freepik">Freepik</a>, <a href="https://www.flaticon.com/authors/roundicons" title="Roundicons">Roundicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a> is licensed by <a href="http://creativecommons.org/licenses/by/3.0/" title="Creative Commons BY 3.0" target="_blank">CC 3.0 BY</a></div>
         </footer>
 
 

@@ -16,10 +16,10 @@ RUN python -m spacy download en
 ADD ./first.py /opt/first/
 ADD ./first/ /opt/first/first/
 ADD ./cryptozoo /opt/first/cryptozoo
+ADD ./models /opt/first/models
 WORKDIR /opt/first
 
 RUN adduser -D first
 USER first
 
 CMD python first.py
-# CMD echo 'test'

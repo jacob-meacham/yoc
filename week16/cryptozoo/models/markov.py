@@ -1,17 +1,19 @@
 import markovify
-import spacy
+#import spacy
 
 # TODO: Interface to the model for generating a paper
-nlp = spacy.load("en")
+#nlp = spacy.load("en")
 
 
 def word_split(sentence):
-    return ["::".join((word.orth_, word.pos_)) for word in nlp(sentence)]
+    #return ["::".join((word.orth_, word.pos_)) for word in nlp(sentence)]
+    return None
 
 
 def word_join(words):
-    sentence = " ".join(word.split("::")[0] for word in words)
-    return sentence
+    #sentence = " ".join(word.split("::")[0] for word in words)
+    #return sentence
+    return None
 
 
 class PartOfSpeechAwareText(markovify.Text):
@@ -38,4 +40,4 @@ def build_model(text, newline_delimited=False):
 
 
 def load_model(model_definition):
-    return PartOfSpeechAwareText.from_json(model_definition)
+    return markovify.Text.from_json(model_definition)

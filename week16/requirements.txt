@@ -1,6 +1,6 @@
 markovify==0.7.1
 Flask==0.12.2
-#gunicorn==19.7.1
+python-slugify==1.2.4
 spacy==2.0.5
 #tensorflow==1.4.1
 waitress==1.1.0

@@ -1,0 +1,11 @@
+{% extends "layout.html" %}
+{% block main %}
+<h1>Papers</h1>
+<ul>
+    {% for paper in papers %}
+    <li>
+        <a href="/program/paper/{{paper.slug}}">{{ paper.title }}</a>
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

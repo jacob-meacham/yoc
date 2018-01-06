@@ -1,5 +1,11 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
 body {
     font-family: 'Montserrat', sans-serif;
+    margin-bottom: 100px;
 }
 
 .masthead {
@@ -11,16 +17,45 @@ body {
 }
 
 .footer {
+  padding-top: 10px;
   font-size: 14px;
-  border-top: 15px solid #EAD94C;
   background-image: url(../img/pattern.png);
   background-color: #DD7373;
-  color: white;
+  color: #4B296B;
   position: absolute;
   width: 100%;
   bottom: 0px;
-  height: 30px;
   font-weight: 100;
+  text-align: center;
+}
+
+@media (min-width: 992px) {
+  .footer {
+    height: 50px;
+  }
+}
+
+@media (max-width: 642px) {
+  .footer {
+    height: 100px;
+  }
+}
+
+.footer a {
+  color: #4B296B;
+}
+
+.footer a:hover {
+  color: #4B296B;
+  text-decoration: none;
+}
+
+.footer .copyright {
+
+}
+
+.footer .attribution {
+  font-size: 10px;
 }
 
 .navbar {
@@ -74,4 +109,75 @@ body {
 .navbar-title .title {
     font-weight: bolder;
     font-size: 1.875rem;
+}
+
+.sponsors {
+  margin-top: 40px;
+}
+
+.sponsors h2 {
+  display: inline-block;
+  padding-right: 100px;
+  border-top: 2px solid black;
+}
+
+.sponsor-item {
+  margin-bottom: 20px;
+}
+
+.sponsor-item .logo {
+  display: inline-block;
+}
+
+.sponsor-item .text {
+  display: inline-block;
+}
+
+.sponsor-item .logo img {
+  width: 64px;
+  height: 64px;
+}
+
+.sponsor-item.riftcorp .text {
+  font-size: 30px;
+  vertical-align: middle;
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+.sponsor-item.kraznov-federation .text {
+  font-size: 20px;
+  line-height: 20px;
+  vertical-align: top;
+  font-family: 'Roboto Condensed', sans-serif;
+}
+
+.sponsor-item.rift-city-university .text {
+  vertical-align: middle;
+  font-size: 20px;
+  line-height: 16px;
+  font-weight: bold;
+}
+
+.sponsor-item.rift-city-university .text1 {
+  font-size: 16px;
+}
+
+.sponsor-item.rift-city-university .text2 {
+  color: #576CA8;
+}
+
+.sponsor-item.src .text {
+  display: inline-block;
+  text-transform: uppercase;
+  vertical-align: middle;
+}
+
+.sponsor-item.src .text1 {
+  font-size: 12px;
+  color: #777;
+  line-height: 0px
+}
+
+.sponsor-item.src .text2 {
+  font-size: 20px;
 }
