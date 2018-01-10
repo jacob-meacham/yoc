@@ -55,11 +55,14 @@ def award():
 
 @app.route('/program/paper/<paper>')
 def paper(paper):
-    page = random.choice(['paper1.html', 'paper2.html', 'paper3.html', 'paper4.html'])
-    return render_template(page, **{
-        'title': 'Not Found',
-        'base_url': 'firstconf.org'
-    })
+    if random.random() < 0.1:
+        return app.send_static_file('GlitchedPaper.pdf') 
+    else:
+        page = random.choice(['paper1.html', 'paper2.html', 'paper3.html', 'paper4.html'])
+        return render_template(page, **{
+            'title': 'Not Found',
+            'base_url': 'firstconf.org'
+        })
 
 @app.route('/about')
 def about():
